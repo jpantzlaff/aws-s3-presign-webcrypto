@@ -1,7 +1,13 @@
 import {
   assertEquals,
 } from 'https://deno.land/std@0.103.0/testing/asserts.ts'
-import { getSignedUrl } from './mod.ts'
+
+import {
+  encodeString,
+  getSignedUrl,
+  hmacSha256Hex,
+  sha256
+} from './mod.ts'
 
 const date = new Date('Fri, 24 May 2013 00:00:00 GMT')
 
@@ -12,6 +18,23 @@ const baseTestOptions = {
   secretAccessKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
   date,
 }
+
+Deno.test('calculates an SHA-256 digest', async () => {
+  assertEquals(
+    await sha256('sample text'),
+    'bc658c641ef71739fb9995bded59b21150bbff4367f6e4e4c7934b489b9d2c00'
+  )
+})
+
+Deno.test('calculates an HMAC SHA-256 signature', async () => {
+  assertEquals(
+    await hmacSha256Hex(
+      encodeString('sample key'),
+      'sample value'
+    ),
+    'c95d935bc17cec2e0d8f951fe5e0c63c6ef2eb5842a9ebac1a47fc22ac341877'
+  )
+})
 
 Deno.test('creates a presigned URL', async () => {
   assertEquals(

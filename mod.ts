@@ -13,7 +13,7 @@ export interface GetSignedUrlOptions {
   endpoint?: string
 }
 
-function encodeString(data: string): Uint8Array {
+export function encodeString(data: string): Uint8Array {
   return new TextEncoder().encode(data)
 }
 
@@ -24,7 +24,7 @@ function hex(data: ArrayBuffer): string {
     .join('')
 }
 
-async function sha256(data: string): Promise<string> {
+export async function sha256(data: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', encodeString(data))
   return hex(digest)
 }
@@ -48,7 +48,7 @@ async function hmacSha256(keyData: ArrayBuffer, data: string): Promise<ArrayBuff
   )
 }
 
-async function hmacSha256Hex(key: ArrayBuffer, data: string): Promise<string> {
+export async function hmacSha256Hex(key: ArrayBuffer, data: string): Promise<string> {
   const signature = await hmacSha256(key, data)
   return hex(signature)
 }
