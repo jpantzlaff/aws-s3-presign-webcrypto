@@ -1,8 +1,6 @@
-import { Sha256, HmacSha256 } from 'https://deno.land/std/hash/sha256.ts'
-
 const NEWLINE = '\n'
 
-interface GetSignedUrlOptions {
+export interface GetSignedUrlOptions {
   bucketName: string
   objectPath: string
   accessKeyId: string
@@ -15,16 +13,44 @@ interface GetSignedUrlOptions {
   endpoint?: string,
 }
 
-function sha256(data: string): string {
-  return new Sha256().update(data).hex()
+function encodeString(data: string): Uint8Array {
+  return new TextEncoder().encode(data)
 }
 
-function hmacSha256(key: string | ArrayBuffer, data: string): ArrayBuffer {
-  return new HmacSha256(key).update(data).arrayBuffer()
+function hex(data: ArrayBuffer): string {
+  return Array
+    .from(new Uint8Array(data))
+    .map((x) => x.toString(16).padStart(2, '0'))
+    .join('')
 }
 
-function hmacSha256Hex(key: string | ArrayBuffer, data: string): string {
-  return new HmacSha256(key).update(data).hex()
+async function sha256(data: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', encodeString(data))
+  return hex(digest)
+}
+
+async function hmacSha256(keyData: ArrayBuffer, data: string): Promise<ArrayBuffer> {
+  const algorithm = {
+    name: 'HMAC',
+    hash: 'SHA-256'
+  }
+  const key = await crypto.subtle.importKey(
+    'raw',
+    (keyData instanceof ArrayBuffer) ? keyData : encodeString(keyData),
+    algorithm,
+    false,
+    ['sign']
+  )
+  return crypto.subtle.sign(
+    algorithm,
+    key,
+    encodeString(data)
+  )
+}
+
+async function hmacSha256Hex(key: ArrayBuffer, data: string): Promise<string> {
+  const signature = await hmacSha256(key, data)
+  return hex(signature)
 }
 
 function ymd(date: Date): string {
@@ -76,24 +102,27 @@ function getCanonicalRequest(options: Required<GetSignedUrlOptions>, queryParame
   ].join('')
 }
 
-function getSignaturePayload(options: Required<GetSignedUrlOptions>, payload: string): string {
+async function getSignaturePayload(options: Required<GetSignedUrlOptions>, payload: string): Promise<string> {
   return [
     'AWS4-HMAC-SHA256', NEWLINE,
     isoDate(options.date), NEWLINE,
     `${ymd(options.date)}/${options.region}/s3/aws4_request`, NEWLINE,
-    sha256(payload),
+    await sha256(payload),
   ].join('')
 }
 
-function getSignatureKey(options: Required<GetSignedUrlOptions>): string {
-  type reducer = (previous: string, current: string) => any
-  return [
-    `AWS4${options.secretAccessKey}`,
+async function getSignatureKey(options: Required<GetSignedUrlOptions>): Promise<ArrayBuffer> {
+  let key: ArrayBuffer = encodeString(`AWS4${options.secretAccessKey}`)
+  const components = [
     ymd(options.date),
     options.region,
     's3',
     'aws4_request',
-  ].reduce(hmacSha256 as reducer)
+  ]
+  for (const component of components) {
+    key = await hmacSha256(key, component)
+  }
+  return key
 }
 
 function getUrl(options: Required<GetSignedUrlOptions>, queryParameters: URLSearchParams, signature: string): string {
@@ -101,13 +130,13 @@ function getUrl(options: Required<GetSignedUrlOptions>, queryParameters: URLSear
   return `https://${options.bucketName}.${options.endpoint}${options.objectPath}?${new URLSearchParams(queryParameters).toString()}`
 }
 
-export function getSignedUrl(options: GetSignedUrlOptions): string {
+export async function getSignedUrl(options: GetSignedUrlOptions): Promise<string> {
   const parsedOptions = parseOptions(options)
   const queryParameters = getQueryParameters(parsedOptions)
   const canonicalRequest = getCanonicalRequest(parsedOptions, queryParameters)
-  const signaturePayload = getSignaturePayload(parsedOptions, canonicalRequest)
-  const signatureKey = getSignatureKey(parsedOptions)
-  const signature = hmacSha256Hex(signatureKey, signaturePayload)
+  const signaturePayload = await getSignaturePayload(parsedOptions, canonicalRequest)
+  const signatureKey = await getSignatureKey(parsedOptions)
+  const signature = await hmacSha256Hex(signatureKey, signaturePayload)
   const url = getUrl(parsedOptions, queryParameters, signature)
   return url
 }
