@@ -1,16 +1,16 @@
 const NEWLINE = '\n'
 
 export interface GetSignedUrlOptions {
-  bucketName: string
-  objectPath: string
+  path: string
+  query?: Record<string, string | number>
   accessKeyId: string
   secretAccessKey: string
   sessionToken?: string
   method?: 'GET' | 'PUT'
   region?: string
   expiresIn?: number
-  date?: Date,
-  endpoint?: string,
+  date?: Date
+  endpoint?: string
 }
 
 function encodeString(data: string): Uint8Array {
@@ -62,9 +62,7 @@ function isoDate(date: Date): string {
 }
 
 function parseOptions(provided: GetSignedUrlOptions): Required<GetSignedUrlOptions> {
-  if (!provided.objectPath.startsWith('/')) {
-    provided.objectPath = '/' + provided.objectPath
-  }
+  const path = `/${provided.path}`.replace(/\/\//g, '/')
   return {
     ...{
       method: 'GET',
@@ -73,8 +71,10 @@ function parseOptions(provided: GetSignedUrlOptions): Required<GetSignedUrlOptio
       date: new Date(),
       sessionToken: '',
       endpoint: 's3.amazonaws.com',
+      query: {}
     },
     ...provided,
+    path
   }
 }
 
@@ -86,6 +86,7 @@ function getQueryParameters(options: Required<GetSignedUrlOptions>): URLSearchPa
     'X-Amz-Expires': options.expiresIn.toString(),
     'X-Amz-SignedHeaders': 'host',
     ...(options.sessionToken ? { 'X-Amz-Security-Token': options.sessionToken } : {}),
+    ...options.query
   })
 }
 
@@ -93,9 +94,9 @@ function getCanonicalRequest(options: Required<GetSignedUrlOptions>, queryParame
   queryParameters.sort()
   return [
     options.method, NEWLINE,
-    options.objectPath, NEWLINE,
+    options.path, NEWLINE,
     queryParameters.toString(), NEWLINE,
-    `host:${options.bucketName}.${options.endpoint}`, NEWLINE,
+    `host:${options.endpoint}`, NEWLINE,
     NEWLINE,
     'host', NEWLINE,
     'UNSIGNED-PAYLOAD',
@@ -127,7 +128,7 @@ async function getSignatureKey(options: Required<GetSignedUrlOptions>): Promise<
 
 function getUrl(options: Required<GetSignedUrlOptions>, queryParameters: URLSearchParams, signature: string): string {
   queryParameters.set('X-Amz-Signature', signature)
-  return `https://${options.bucketName}.${options.endpoint}${options.objectPath}?${new URLSearchParams(queryParameters).toString()}`
+  return `https://${options.endpoint}${options.path}?${new URLSearchParams(queryParameters).toString()}`
 }
 
 export async function getSignedUrl(options: GetSignedUrlOptions): Promise<string> {
