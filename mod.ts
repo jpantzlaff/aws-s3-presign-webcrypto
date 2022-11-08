@@ -36,7 +36,7 @@ async function hmacSha256(keyData: ArrayBuffer, data: string): Promise<ArrayBuff
   }
   const key = await crypto.subtle.importKey(
     'raw',
-    (keyData instanceof ArrayBuffer) ? keyData : encodeString(keyData),
+    keyData,
     algorithm,
     false,
     ['sign']
