@@ -1,18 +1,18 @@
-[![test](https://github.com/dansalias/aws_s3_presign/actions/workflows/test.yml/badge.svg)](https://github.com/dansalias/aws_s3_presign/actions/workflows/test.yml)
+Generates presigned URLs to get, create, and otherwise manipulate objects in Amazon S3 (AWS Signature Version 4).
+Tested per https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html.
 
-__Deno__ module for creating presigned URLs to get and update objects in Amazon
-S3 (AWS Signature Version 4). Implemented and tested as per
-https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html.
+This module works mostly like the [dansalias/aws_s3_presign](https://github.com/dansalias/aws_s3_presign)
+repository it's based on. However, it avoids the use of Deno-specific libraries, favoring the
+[Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) instead.
 
 ## Usage
 ```ts
-import { getSignedUrl } from 'https://deno.land/x/aws_s3_presign/mod.ts'
+import { getSignedUrl } from './mod.ts'
 
 const url = getSignedUrl({
   accessKeyId: 'my-aws-access-key-id',
   secretAccessKey: 'my-aws-secret-access-key',
-  bucketName: 'example-bucket',
-  objectPath: '/test.txt',
+  path: '/example-bucket/test.txt',
   region: 'us-east-1',
 })
 ```
@@ -20,8 +20,7 @@ const url = getSignedUrl({
 ## Options
 ```ts
 interface GetSignedUrlOptions {
-  bucketName: string        // required
-  objectPath: string        // required
+  path: string              // required
   accessKeyId: string       // required
   secretAccessKey: string   // required
   sessionToken?: string     // AWS STS token
@@ -35,7 +34,5 @@ interface GetSignedUrlOptions {
 
 ## Testing
 ```
-git clone https://github.com/dansalias/aws_s3_presign
-cd ./aws_s3_presign
 deno test
 ```
