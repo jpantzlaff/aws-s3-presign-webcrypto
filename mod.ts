@@ -54,11 +54,11 @@ export async function hmacSha256Hex(key: ArrayBuffer, data: string): Promise<str
 }
 
 function ymd(date: Date): string {
-  return date.toISOString().substring(0,10).replace(/[^\d]/g, '')
+  return date.toISOString().substring(0, 10).replace(/[^\d]/g, '')
 }
 
 function isoDate(date: Date): string {
-  return `${date.toISOString().substring(0,19).replace(/[^\dT]/g, '')}Z`
+  return `${date.toISOString().substring(0, 19).replace(/[^\dT]/g, '')}Z`
 }
 
 function parseOptions(provided: GetSignedUrlOptions): Required<GetSignedUrlOptions> {
@@ -85,7 +85,7 @@ function getQueryParameters(options: Required<GetSignedUrlOptions>): URLSearchPa
     'X-Amz-Date': isoDate(options.date),
     'X-Amz-Expires': options.expiresIn.toString(),
     'X-Amz-SignedHeaders': 'host',
-    ...(options.sessionToken ? { 'X-Amz-Security-Token': options.sessionToken } : {}),
+    ...(options.sessionToken ? {'X-Amz-Security-Token': options.sessionToken} : {}),
     ...options.query
   })
 }
@@ -99,7 +99,7 @@ function getCanonicalRequest(options: Required<GetSignedUrlOptions>, queryParame
     `host:${options.endpoint}`, NEWLINE,
     NEWLINE,
     'host', NEWLINE,
-    'UNSIGNED-PAYLOAD',
+    'UNSIGNED-PAYLOAD'
   ].join('')
 }
 
@@ -108,7 +108,7 @@ async function getSignaturePayload(options: Required<GetSignedUrlOptions>, paylo
     'AWS4-HMAC-SHA256', NEWLINE,
     isoDate(options.date), NEWLINE,
     `${ymd(options.date)}/${options.region}/s3/aws4_request`, NEWLINE,
-    await sha256(payload),
+    await sha256(payload)
   ].join('')
 }
 
@@ -118,7 +118,7 @@ async function getSignatureKey(options: Required<GetSignedUrlOptions>): Promise<
     ymd(options.date),
     options.region,
     's3',
-    'aws4_request',
+    'aws4_request'
   ]
   for (const component of components) {
     key = await hmacSha256(key, component)
