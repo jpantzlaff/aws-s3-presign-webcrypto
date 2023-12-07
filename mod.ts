@@ -6,7 +6,7 @@ export interface GetSignedUrlOptions {
   accessKeyId: string
   secretAccessKey: string
   sessionToken?: string
-  method?: 'GET' | 'PUT'
+  method?: 'DELETE' | 'GET' | 'POST' | 'PUT'
   region?: string
   expiresIn?: number
   date?: Date
