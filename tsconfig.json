@@ -2,7 +2,7 @@
   "compilerOptions": {
     "lib": [
       "esnext",
-      "deno.window"
+      "dom"
     ]
   }
 }
