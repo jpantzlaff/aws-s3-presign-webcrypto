@@ -11,6 +11,7 @@ export interface GetSignedUrlOptions {
   expiresIn?: number
   date?: Date
   endpoint?: string
+  protocol?: 'http' | 'https'
 }
 
 export function encodeString(data: string): Uint8Array {
@@ -71,7 +72,8 @@ function parseOptions(provided: GetSignedUrlOptions): Required<GetSignedUrlOptio
       date: new Date(),
       sessionToken: '',
       endpoint: 's3.amazonaws.com',
-      query: {}
+      query: {},
+      protocol: 'https'
     },
     ...provided,
     path
@@ -128,7 +130,7 @@ async function getSignatureKey(options: Required<GetSignedUrlOptions>): Promise<
 
 function getUrl(options: Required<GetSignedUrlOptions>, queryParameters: URLSearchParams, signature: string): string {
   queryParameters.set('X-Amz-Signature', signature)
-  return `https://${options.endpoint}${options.path}?${new URLSearchParams(queryParameters).toString()}`
+  return `${options.protocol}://${options.endpoint}${options.path}?${new URLSearchParams(queryParameters).toString()}`
 }
 
 export async function getSignedUrl(options: GetSignedUrlOptions): Promise<string> {
