@@ -6,10 +6,10 @@
   "browser": "dist/mod-browser.js",
   "types": "dist/mod.d.ts",
   "scripts": {
-    "build": "npm run build-browser && npm run build-node && npm run build-dts",
     "build-browser": "esbuild mod.ts --outfile=dist/mod-browser.js",
     "build-dts": "dts-bundle-generator --o=dist/mod.d.ts mod.ts",
-    "build-node": "esbuild mod.ts --bundle --platform=node --target=node15 --banner:js=\"const crypto = require('crypto').webcrypto;\" --outfile=dist/mod-node.js"
+    "build-node": "esbuild mod.ts --bundle --platform=node --target=node15 --banner:js=\"const crypto = require('crypto').webcrypto;\" --outfile=dist/mod-node.js",
+    "package": "npm run build-browser && npm run build-node && npm run build-dts"
   },
   "repository": {
     "type": "git",
