@@ -4,9 +4,11 @@
   "description": "Calculates presigned URLs for AWS S3 using the Web Crypto API.",
   "main": "dist/mod-node.js",
   "browser": "dist/mod-browser.js",
+  "types": "dist/mod.d.ts",
   "scripts": {
-    "build": "npm run build-browser && npm run build-node",
+    "build": "npm run build-browser && npm run build-node && npm run build-dts",
     "build-browser": "esbuild mod.ts --outfile=dist/mod-browser.js",
+    "build-dts": "dts-bundle-generator --o=dist/mod.d.ts mod.ts",
     "build-node": "esbuild mod.ts --bundle --platform=node --target=node15 --banner:js=\"const crypto = require('crypto').webcrypto;\" --outfile=dist/mod-node.js"
   },
   "repository": {
@@ -20,6 +22,7 @@
   },
   "homepage": "https://github.com/jpantzlaff/aws-s3-presign-webcrypto#readme",
   "devDependencies": {
+    "dts-bundle-generator": "^9.0.0",
     "esbuild": "^0.19.8"
   },
   "engines": {
