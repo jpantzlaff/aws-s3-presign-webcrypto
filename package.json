@@ -1,0 +1,20 @@
+{
+  "name": "@jpantzlaff/aws-s3-presign-webcrypto",
+  "version": "1.0.0",
+  "description": "Calculates presigned URLs for AWS S3 using the Web Crypto API.",
+  "main": "dist/mod-node.js",
+  "browser": "dist/mod-browser.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jpantzlaff/aws-s3-presign-webcrypto.git"
+  },
+  "author": "John Pantzlaff, Dan Salias",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jpantzlaff/aws-s3-presign-webcrypto/issues"
+  },
+  "homepage": "https://github.com/jpantzlaff/aws-s3-presign-webcrypto#readme",
+  "engines": {
+    "node": ">=15"
+  }
+}
