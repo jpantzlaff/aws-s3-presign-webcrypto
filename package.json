@@ -1,6 +1,6 @@
 {
   "name": "@jpantzlaff/aws-s3-presign-webcrypto",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Calculates presigned URLs for AWS S3 using the Web Crypto API.",
   "main": "dist/mod-node.js",
   "browser": "dist/mod-browser.js",
