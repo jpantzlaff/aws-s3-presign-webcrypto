@@ -8,7 +8,7 @@
   "scripts": {
     "build-browser": "esbuild mod.ts --banner:js='/// <reference types=\"./mod.d.ts\" />' --outfile=dist/mod-browser.js",
     "build-dts": "dts-bundle-generator --o=dist/mod.d.ts mod.ts",
-    "build-node": "esbuild mod.ts --bundle --platform=node --target=node15 --banner:js='/// <reference types=\"./mod.d.ts\" />\nconst crypto = require('crypto').webcrypto;' --outfile=dist/mod-node.js",
+    "build-node": "esbuild mod.ts --bundle --platform=node --target=node15 --banner:js='/// <reference types=\"./mod.d.ts\" />\nconst crypto = require(\"crypto\").webcrypto;' --outfile=dist/mod-node.js",
     "package": "npm run build-browser && npm run build-node && npm run build-dts"
   },
   "repository": {

@@ -1,5 +1,5 @@
 /// <reference types="./mod.d.ts" />
-const crypto = require(crypto).webcrypto;
+const crypto = require("crypto").webcrypto;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
