@@ -62,9 +62,16 @@ function isoDate(date: Date): string {
   return `${date.toISOString().substring(0, 19).replace(/[^\dT]/g, '')}Z`
 }
 
+function encodeRFC3986URIComponent(text: string) {
+  return encodeURIComponent(text).replace(
+    /[!'()*]/g,
+    (x) => `%${x.charCodeAt(0).toString(16).toUpperCase()}`
+  );
+}
+
 function uriEncodePath(path: string): string {
   const parts = path.split('/')
-  return parts.map(encodeURIComponent).join('/')
+  return parts.map(encodeRFC3986URIComponent).join('/')
 }
 
 function parseOptions(provided: GetSignedUrlOptions): Required<GetSignedUrlOptions> {
