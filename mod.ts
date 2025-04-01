@@ -62,8 +62,15 @@ function isoDate(date: Date): string {
   return `${date.toISOString().substring(0, 19).replace(/[^\dT]/g, '')}Z`
 }
 
+function uriEncodePath(path: string): string {
+  const parts = path.split('/')
+  return parts.map(encodeURIComponent).join('/')
+}
+
 function parseOptions(provided: GetSignedUrlOptions): Required<GetSignedUrlOptions> {
-  const path = `/${provided.path}`.replace(/\/\//g, '/')
+  const path = uriEncodePath(
+    `/${provided.path}`.replace(/\/\//g, '/')
+  )
   return {
     ...{
       method: 'GET',
