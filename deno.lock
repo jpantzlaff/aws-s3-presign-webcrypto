@@ -9,7 +9,7 @@
     "packageJson": {
       "dependencies": [
         "npm:dts-bundle-generator@9",
-        "npm:esbuild@~0.19.8"
+        "npm:esbuild@~0.25.2"
       ]
     }
   }
