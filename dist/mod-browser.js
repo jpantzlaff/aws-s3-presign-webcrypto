@@ -38,9 +38,15 @@ function ymd(date) {
 function isoDate(date) {
   return `${date.toISOString().substring(0, 19).replace(/[^\dT]/g, "")}Z`;
 }
+function encodeRFC3986URIComponent(text) {
+  return encodeURIComponent(text).replace(
+    /[!'()*]/g,
+    (x) => `%${x.charCodeAt(0).toString(16).toUpperCase()}`
+  );
+}
 function uriEncodePath(path) {
   const parts = path.split("/");
-  return parts.map(encodeURIComponent).join("/");
+  return parts.map(encodeRFC3986URIComponent).join("/");
 }
 function parseOptions(provided) {
   const path = uriEncodePath(
