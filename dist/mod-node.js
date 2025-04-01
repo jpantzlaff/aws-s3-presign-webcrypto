@@ -66,8 +66,14 @@ function ymd(date) {
 function isoDate(date) {
   return `${date.toISOString().substring(0, 19).replace(/[^\dT]/g, "")}Z`;
 }
+function uriEncodePath(path) {
+  const parts = path.split("/");
+  return parts.map(encodeURIComponent).join("/");
+}
 function parseOptions(provided) {
-  const path = `/${provided.path}`.replace(/\/\//g, "/");
+  const path = uriEncodePath(
+    `/${provided.path}`.replace(/\/\//g, "/")
+  );
   return {
     ...{
       method: "GET",
