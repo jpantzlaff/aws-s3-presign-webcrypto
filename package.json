@@ -23,7 +23,7 @@
   "homepage": "https://github.com/jpantzlaff/aws-s3-presign-webcrypto#readme",
   "devDependencies": {
     "dts-bundle-generator": "^9.0.0",
-    "esbuild": "^0.19.8"
+    "esbuild": "^0.25.2"
   },
   "engines": {
     "node": ">=15"
